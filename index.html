@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+  <title></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style>
+  
+  body {
+    font: 120%/1.6 normal normal Helvetica, Arial, sans-serif;
+    margin: 0;
+        -webkit-perspective: 600;
+  }
+  
+  html, body{
+    height: 100%;
+  }
+  
+  ul, li {
+    padding: 0;
+    margin: 0;
+  }
+  
+  li {
+    padding: 1rem 2rem;
+    background: #eee;
+    border-bottom: 1px solid #d7d7d7;
+  }
+  
+  .scrolling {
+    overflow-y: auto;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    background: #ddd;
+  }
+  
+  .scrolling.close{
+    -webkit-animation: close 0.4s ease-out;
+  }
+  
+  .wrapper{
+    min-height: 100%;
+    -webkit-transform: translateZ(0);
+  }
+  
+  .pull-to-action {
+    box-sizing: border-box;
+    height: 100px;
+    width: 100%;
+    padding: 1rem 2rem;
+
+    /* Position not 'absolute' because iOS would add the element's height to the container's content box when it's negatively offset at the bottom. Bug? */
+    position: fixed; 
+    z-index: -1;
+    left: 0;
+    bottom: -100px;
+  }
+  
+  @-webkit-keyframes close{
+    to {
+      -webkit-transform: scale(0.5);
+      opacity: 0;
+    }
+  }
+  
+  </style>
+</head>
+<body>
+  <div class="scrolling close">
+    <div class="wrapper">
+      <div class="pull-to-action">
+        <span class="message pull">Pull up to close</span>
+        <span class="message release">Release to close</span>
+      </div>
+      <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+        <li>Item 4</li>
+        <li>Item 5</li>
+        <li>Item 6</li>
+        <li>Item 7</li>
+        <li>Item 8</li>
+        <li>Item 9</li>
+        <li>Item 10</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    
+    // container with scroll
+    var el = document.querySelector('.scrolling')
+
+    // content inside container
+    var list = document.querySelector('.scrolling ul')
+
+    var elHeight, listHeight, maxScroll
+    
+    function setup(){
+      elHeight = parseInt(window.getComputedStyle(el, null).height, 10)
+      listHeight = parseInt(window.getComputedStyle(list, null).height, 10)
+      maxScroll = Math.max(listHeight - elHeight, 0)
+    }
+
+    el.addEventListener('touchstart', function(e){
+      // force a scroll offset if none exists to trick iOS into scrolling this
+      // use existent scroll offset if the content has been scrolled before.
+      el.scrollTop = (el.scrollTop === 0) ? 1 : el.scrollTop
+    })
+    
+    el.addEventListener('touchmove', function(e){
+        console.log(el.scrollTop)
+    })
+    
+    el.addEventListener('scroll', function(e){
+      if (el.scrollTop == maxScroll){
+        // insert artificial scroll offset to make the element not completely scrolled so iOS won't switch to scrolling the whole document
+        el.scrollTop = maxScroll - 1
+      }
+    })
+
+    document.addEventListener('DOMContentLoaded', setup)
+    // make sure to recalculate dimensions after device auto rotate
+    window.addEventListener('orientationchange', setup)
+
+  </script>
+</body>
+</html>
